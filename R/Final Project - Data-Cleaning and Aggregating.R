@@ -333,4 +333,9 @@ mrt_weather <- mrt_weather %>%
   )
 
 mrt_weather_clean <- mrt_weather %>% drop_na()
+
+#建立一個rain_dummy
+mrt_weather_clean <- mrt_weather_clean %>% 
+  mutate(rain_dummy = ifelse(rain>0, 1, 0))
+
 saveRDS(mrt_weather_clean, "Output/mrt_weather_clean.rds")
