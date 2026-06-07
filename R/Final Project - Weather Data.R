@@ -4,6 +4,7 @@ library(sf)
 library(stringr)
 library(tidyr)
 library(lubridate)
+library(purrr)
 
 #讀天氣資料
 temp_files <- list.files(
@@ -89,7 +90,7 @@ read_temp_file <- function(file_path) {
   return(temp_long)
 }
 
-library(purrr)
+
 temp_panel <- temp_files %>%
   map_dfr(read_temp_file)
 saveRDS(temp_panel, "Output/temp_panel.rds")
@@ -308,4 +309,4 @@ read_humidity_file <- function(file_path) {
 
 humidity_panel <- humidity_files %>%
   map_dfr(read_humidity_file)
-saveRDS(rain_panel, "Output/RelativeHunidity.rds")
+saveRDS(humidity_panel, "Output/RelativeHumidity.rds")
