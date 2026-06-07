@@ -1,0 +1,249 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usetheme{default}
+
+% ===== Packages =====
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+
+% ===== 中文設定 =====
+\usepackage{xeCJK}
+\setCJKmainfont{PingFang TC}
+
+% ===== Title =====
+\title{YouBike Demand Around MRT Stations}
+\subtitle{R for Data Science Final Project}
+\author{Group 3}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Variable Notation}
+
+\small
+
+\begin{columns}[T]
+
+\column{0.48\textwidth}
+
+\begin{itemize}
+    \item $Y_{ist}$: YouBike trip count
+    \item $Rain_{ist}$: Rain indicator
+    \item $Temp_{ist}$: Temperature
+    \item $Humidity_{ist}$: Relative humidity
+\end{itemize}
+
+\column{0.48\textwidth}
+
+\begin{itemize}
+    \item $Weekend_s$: Weekend indicator
+    \item $Hour_t$: Hour fixed effects
+    \item $Station_i$: MRT station fixed effects
+    \item $\varepsilon_{ist}$: Error term
+\end{itemize}
+
+\end{columns}
+
+\vspace{0.4cm}
+
+\begin{center}
+\footnotesize
+$i$ = MRT station \qquad
+$s$ = date \qquad
+$t$ = hour
+\end{center}
+
+\end{frame}
+
+%=
+\begin{frame}{Model 0: Weather Only}
+
+\[
+Y_{ist}
+=
+\beta_0
++
+\beta_1 Rain_{ist}
++
+\beta_2 Temp_{ist}
++
+\beta_3 Temp_{ist}^{2}
++
+\beta_4 Humidity_{ist}
++
+\varepsilon_{ist}
+\]
+
+
+\end{frame}
+%
+\begin{frame}{Model 1: Weather + Time}
+
+\[
+\begin{aligned}
+Y_{ist}
+=
+\beta_0
++
+\beta_1 Rain_{ist}
++
+\beta_2 Temp_{ist}
++
+\beta_3 Temp_{ist}^{2}
++
+\beta_4 Humidity_{ist}
++
+\beta_5 Weekend_s
++ \\
+\sum_{h}
+\gamma_h Hour_{ht}
++
+\varepsilon_{ist}
+\end{aligned}
+\]
+
+\begin{block}{Purpose}
+Examine whether temporal patterns improve explanatory power.
+\end{block}
+
+\end{frame}
+%
+\begin{frame}{Model 2: Weekend $\times$ Hour}
+
+\[
+\begin{aligned}
+Y_{ist}
+=
+\beta_0
++
+\beta_1 Rain_{ist}
++
+\beta_2 Temp_{ist}
++
+\beta_3 Temp_{ist}^{2}
++
+\beta_4 Humidity_{ist}
++
+\beta_5 Weekend_s
++ \\
+\sum_h \gamma_h Hour_{ht}
++
+\sum_h \delta_h
+(Weekend_s \times Hour_{ht})
++
+\varepsilon_{ist}
+\end{aligned}
+\]
+
+\begin{block}{Purpose}
+Test whether weekday and weekend exhibit different intraday demand patterns.
+\end{block}
+
+\end{frame}
+%
+\begin{frame}{Model 3: Rain $\times$ Hour}
+
+\[
+\begin{aligned}
+Y_{ist}
+=
+\beta_0
++
+\beta_1 Rain_{ist}
++
+\sum_h \delta_h
+(Rain_{ist}\times Hour_{ht})
++
+\beta_2 Temp_{ist}
++
+\beta_3 Temp_{ist}^{2}
++
+\beta_4 Humidity_{ist}
++ \\
+\beta_5 Weekend_s
++
+\varepsilon_{ist}
+\end{aligned}
+\]
+
+\begin{block}{Purpose}
+Test whether the impact of rain varies across different hours.
+\end{block}
+
+\end{frame}
+%
+\begin{frame}{Model 4: Station Fixed Effects}
+
+\[
+\begin{aligned}
+Y_{ist}
+=
+\beta_0
++
+\beta_1 Rain_{ist}
++
+\beta_2 Temp_{ist}
++
+\beta_3 Temp_{ist}^{2}
++
+\beta_4 Humidity_{ist}
++
+\beta_5 Weekend_s
++ \\
+\sum_h \gamma_h Hour_{ht}
++
+\sum_j \theta_j Station_{ij}
++
+\varepsilon_{ist}
+\end{aligned}
+\]
+
+\begin{block}{Purpose}
+Control for station-specific demand differences.
+\end{block}
+
+\end{frame}
+%
+\begin{frame}{Model 5: Rain $\times$ Weekend}
+
+\[
+\begin{aligned}
+Y_{ist}
+=
+\beta_0
++
+\beta_1 Rain_{ist}
++
+\beta_2 Weekend_s
++
+\beta_3
+(Rain_{ist}\times Weekend_s)
++
+\beta_4 Temp_{ist}
++ 
+\beta_5 Temp_{ist}^{2}
++ \\
+\beta_6 Humidity_{ist}
++
+\sum_h \gamma_h Hour_{ht}
++
+\sum_j \theta_j Station_{ij}
++
+\varepsilon_{ist}
+\end{aligned}
+\]
+
+\begin{block}{Purpose}
+Test whether the impact of rain differs between weekdays and weekends.
+\end{block}
+
+\end{frame}
+%
+
+%
+\end{document}
