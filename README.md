@@ -135,12 +135,6 @@ Station-specific characteristics explain a large proportion of variation in trip
 
 ---
 
-## Repository Structure
-
-text . ├── Data/              # Raw datasets ├── Output/            # Processed datasets ├── Figures/           # Figures and visualizations ├── R/                 # Data cleaning and analysis scripts ├── Report/            # Final report and presentation slides └── README.md 
-
----
-
 ## Course Information
 
 Course: Research Data Science (RDS)
