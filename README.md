@@ -1,266 +1,152 @@
-# Factors Affecting YouBike Demand Around MRT Stations in Taipei
+# Weather Effects on MRT-Related YouBike Demand in Taipei
 
 ## Project Overview
 
-This project investigates the factors affecting YouBike usage demand around Taipei MRT stations.
+This project was completed as the final project for Research Data Science (RDS) at National Chengchi University.
 
-Using GIS spatial matching, weather observations, and YouBike transaction data, we construct an MRT-related YouBike demand dataset and examine how weather conditions, time patterns, and station characteristics influence hourly YouBike usage.
+The objective of this project is to demonstrate a complete data science workflow, including data collection, data cleaning, data integration, exploratory data analysis (EDA), spatial data processing, statistical modeling, and result interpretation.
 
-The project combines exploratory data analysis (EDA) and econometric regression models to identify the major determinants of YouBike demand.
+Using Taipei YouBike trip records, MRT station location data, and weather observations, we investigate how weather conditions affect MRT-related YouBike demand and explore the relationship between weather and first-/last-mile transportation behavior.
 
 ---
 
 ## Research Questions
 
-This project focuses on the following questions:
+This study aims to answer the following questions:
 
-1. How does YouBike demand vary throughout the day?
-2. Are there different usage patterns between weekdays and weekends?
-3. How do rainfall, temperature, and humidity affect YouBike demand?
-4. Does rainfall affect demand differently across time periods?
-5. How important are MRT station characteristics in explaining demand differences?
+1. Does rainfall reduce MRT-related YouBike demand?
+2. How does temperature influence MRT-related YouBike usage?
+3. Does the impact of weather on MRT-related YouBike demand exhibit temporal and spatial heterogeneity?
 
 ---
 
 ## Data Sources
 
-### 1. YouBike 2.0 Transaction Data
+### 1. YouBike Trip Data
 
-**Period:** June 2025 – September 2025
+Taipei YouBike 2.0 trip records containing:
 
-Contains trip-level information including:
-
-- Start station
-- End station
-- Rental time
+- Origin station
+- Destination station
+- Start time
+- End time
 - Trip duration
 
-Used to construct hourly YouBike demand around MRT stations.
+### 2. MRT Station Data
 
----
+Taipei Metro station and exit location data containing:
 
-### 2. MRT Station Exit Coordinates
-
-Source:
-
-https://data.taipei/dataset/detail?id=cfa4778c-62c1-497b-b704-756231de348b
-
-Contains:
-
-- MRT station exits
+- MRT station names
+- Exit locations
 - Geographic coordinates
 
-Used to identify MRT-related YouBike stations through GIS spatial matching.
+### 3. Weather Data
 
----
+Weather observations obtained from the Central Weather Administration (CWA):
 
-### 3. Weather Observation Data
-
-Source:
-
-Central Weather Administration (CWA)
-
-https://codis.cwa.gov.tw/StationData
-
-Variables:
-
-- Rainfall
 - Temperature
-- Humidity
-
-Hourly weather observations are matched with YouBike demand records.
-
----
+- Rainfall
+- Relative humidity
 
 ### 4. Weather Station Metadata
 
-Source:
+Weather station information:
 
+- Station coordinates
+- Station identifiers
+
+Source:
 https://github.com/Raingel/weather_station_list
 
-Used to spatially match YouBike stations with the nearest weather station.
-
 ---
 
-## Data Processing
+## Data Science Workflow
 
-### GIS Spatial Matching
+### 1. Data Collection
 
-- Construct MRT station buffers
-- Identify nearby YouBike stations
-- Match weather stations to YouBike stations
+Multiple open datasets were collected from different sources, including transportation and weather databases.
 
-### Temporal Aggregation
+### 2. Data Cleaning
 
-Convert trip-level records into:
+Data preprocessing procedures included:
 
-- MRT station × hour demand observations
+- Missing value inspection
+- Datetime conversion
+- Coordinate standardization
+- Variable transformation
 
-### Weather Matching
+### 3. Data Integration
 
-Merge:
+To combine multiple datasets, we performed:
 
-- Hourly weather conditions
-- Hourly YouBike demand
+- Spatial matching between MRT exits and nearby YouBike stations
+- Weather station assignment based on geographic proximity
+- Temporal matching between trip records and hourly weather observations
 
----
+### 4. Exploratory Data Analysis (EDA)
 
-## Exploratory Data Analysis
+Before constructing the regression models, we conducted several exploratory analyses to understand the characteristics of MRT-related YouBike demand.
 
-The project examines:
+Our EDA focused on:
 
-### Demand Distribution
+- **Hourly demand patterns**, identifying morning and evening peaks associated with commuting activities.
+- **Station-level demand variation**, comparing MRT stations with different demand intensities and usage characteristics.
+- **Weather effects on demand**, examining differences in ridership between rainy and non-rainy conditions.
+- **Temporal heterogeneity**, investigating whether weather impacts vary across different hours of the day.
+- **Spatial heterogeneity**, comparing weather-demand relationships across different MRT station types.
+- **Nonlinear relationships between weather variables and demand**, including temperature and humidity effects on YouBike usage.
 
-- Histogram of trip counts
-- Log-transformed demand distribution
+These analyses provide preliminary evidence that weather conditions, time of day, and station characteristics jointly influence MRT-related YouBike demand.
 
-### Station-Level Demand
+### 5. Statistical Modeling
 
-- Top MRT stations by average YouBike demand
+To estimate the effects of weather conditions on MRT-related YouBike demand, we implemented:
 
-### Temporal Patterns
+- Multiple Linear Regression
+- Negative Binomial Regression
 
-- Hourly demand pattern
-- Morning and evening demand peaks
-- Weekday versus weekend demand
+Control variables include:
 
-### Weather Effects
+- Temperature
+- Relative humidity
+- Weekend indicator
+- Hour fixed effects
+- Station fixed effects
 
-- Rain versus no-rain demand
-- Temperature-demand relationship
-- Humidity-demand relationship
+### 6. Result Interpretation
 
-### Rainfall Heterogeneity
-
-- Rain effects across MRT stations
-- Rain effects across different time periods
-
----
-
-## Econometric Models
-
-### Model 0: Weather Model
-
-```r
-trip_count ~
-rain_dummy +
-temperature +
-I(temperature^2) +
-humidity
-```
-
-Examines the effects of weather conditions.
-
-### Model 1: Time Model
-
-```r
-trip_count ~
-rain_dummy +
-temperature +
-I(temperature^2) +
-humidity +
-weekend +
-factor(hour)
-```
-
-Adds temporal demand patterns.
-
-### Model 2: Weekend-Hour Interaction Model
-
-```r
-trip_count ~
-rain_dummy +
-temperature +
-I(temperature^2) +
-humidity +
-weekend * factor(hour)
-```
-
-Tests whether weekday and weekend demand patterns differ.
-
-### Model 3: Rain-Hour Interaction Model
-
-```r
-trip_count ~
-rain_dummy * factor(hour) +
-temperature +
-I(temperature^2) +
-humidity +
-weekend
-```
-
-Tests whether rainfall effects vary across time periods.
-
-### Model 4: Station Fixed Effects Model
-
-```r
-trip_count ~
-rain_dummy +
-temperature +
-I(temperature^2) +
-humidity +
-weekend +
-factor(hour) +
-factor(mrt_station)
-```
-
-Controls for station-specific characteristics.
+Model outputs were used to evaluate how weather conditions influence MRT-related YouBike demand and to understand station-level heterogeneity across Taipei.
 
 ---
 
 ## Main Findings
 
-### Temporal Factors Matter
+### Rainfall Significantly Reduces Demand
 
-Adding hour and weekend information substantially improves model performance.
+Rainy weather is associated with a substantial decline in MRT-related YouBike trips.
 
-### Weekday and Weekend Patterns Differ
+### Nonlinear Temperature Effect
 
-Morning and evening commuting peaks are much stronger on weekdays.
+Trip demand increases with temperature up to a certain level, but extremely high temperatures discourage cycling activity.
 
-### Rainfall Reduces Demand
+### Strong Station Heterogeneity
 
-Rainy conditions significantly decrease YouBike usage.
-
-### Temperature Shows an Inverted-U Relationship
-
-Demand increases with temperature up to a certain level and then declines.
-
-### Station Characteristics Are Highly Important
-
-Station fixed effects explain a large share of demand variation, indicating substantial differences across MRT station environments.
+Station-specific characteristics explain a large proportion of variation in trip demand, indicating that location remains an important determinant of MRT-related YouBike usage.
 
 ---
 
 ## Repository Structure
 
-```
-.
-├── Data/
-├── Output/
-├── Figures/
-├── Tables/
-├── R/
-├── README.md
-└── Final Project.Rproj
-```
+text . ├── Data/              # Raw datasets ├── Output/            # Processed datasets ├── Figures/           # Figures and visualizations ├── R/                 # Data cleaning and analysis scripts ├── Report/            # Final report and presentation slides └── README.md 
 
 ---
 
-## Methods
+## Course Information
 
-- GIS Spatial Matching
-- Exploratory Data Analysis (EDA)
-- Multiple Linear Regression
-- Fixed Effects Modeling
-- Model Comparison (AIC, BIC, RMSE, R²)
+Course: Research Data Science (RDS)
 
----
-
-## Authors
+Instructor: LIAO JEN-CHE
 
 National Chengchi University
 
-Research Data Science (RDS)
-
-Group 3
+Spring 2026

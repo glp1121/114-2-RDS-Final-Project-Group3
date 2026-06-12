@@ -4,6 +4,7 @@ library(performance)
 library(broom)
 library(ggplot2)
 mrt_weather_clean <- readRDS("Output/mrt_weather_clean.rds")
+
 #檢查相關問題
 mrt_weather_clean %>%
   select(rain_dummy,
