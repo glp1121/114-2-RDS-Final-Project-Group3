@@ -18,3 +18,6 @@ Data/
 *.xlsx
 
 .positai
+.RData
+.RDataTmp*
+Data/票證資料/
